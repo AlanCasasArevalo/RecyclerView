@@ -2,9 +2,7 @@ package com.example.alancasas.reciclerview.Activities
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.*
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -33,6 +31,13 @@ class MainActivity : AppCompatActivity() {
 
         //Creamos un manegador de layouts de tipo LinearLayout
         layoutManager = LinearLayoutManager(this)
+
+        //Nuevo layout para usarlo en nuestro recyclerView. En forma de grid (columnas)
+        layoutManager = GridLayoutManager(this,3)
+
+        //Otro tipo de layout para nuestro recyclerView, este permite redimensionar las filas o columnas dependiendo de los valores que le pongamos
+        //Se redimensionan por ejemplo con fotos se ajusta a la foto a mostrar.
+        layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL)
 
         //Inicializamos el adaptador del tipo de nuestro adaptador personalizado pasandole los nombres que seran mostrados, el layout que se va a mostrar, y el contexto de la aplicacion
         adapter = MyAdapter(names,R.layout.recycler_view_item, object : MyAdapter.CustomOnItemClickListener{
