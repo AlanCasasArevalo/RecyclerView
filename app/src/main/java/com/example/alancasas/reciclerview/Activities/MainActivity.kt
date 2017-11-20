@@ -5,16 +5,21 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import com.example.alancasas.reciclerview.Adapters.MyAdapter
 import com.example.alancasas.reciclerview.R
 
 class MainActivity : AppCompatActivity() {
 
     //Creamos las variables que vamos a necesitar sin inicializarlas en un principio
-    var names : ArrayList<String>? = null
-    var recyclerView : RecyclerView? = null
-    var layoutManager : RecyclerView.LayoutManager? = null
-    var adapter: MyAdapter? = null
+    lateinit var names : ArrayList<String>
+    lateinit var recyclerView : RecyclerView
+    lateinit var layoutManager : RecyclerView.LayoutManager
+    lateinit var adapter: MyAdapter
+
+    var counter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,20 +35,40 @@ class MainActivity : AppCompatActivity() {
         layoutManager = LinearLayoutManager(this)
 
         //Inicializamos el adaptador del tipo de nuestro adaptador personalizado pasandole los nombres que seran mostrados, el layout que se va a mostrar, y el contexto de la aplicacion
-        adapter = MyAdapter(names!!,R.layout.recycler_view_item, applicationContext)
+        adapter = MyAdapter(names,R.layout.recycler_view_item, object : MyAdapter.CustomOnItemClickListener{
+            override fun onCustomItemClickListener(name: String, position: Int) {
+                Toast.makeText(applicationContext, "Se esta borrando ${name}",Toast.LENGTH_LONG).show()
+                deleteElement(position)
+            }
+
+        })
 
         //Hacemos que el layout sea siempre de tamaño fijo
-        recyclerView?.setHasFixedSize(true)
+        recyclerView.setHasFixedSize(true)
         //Le pasamos una animacion por defecto al recycler view que seran animaciones al borrar e insertar nuevos elementos
-        recyclerView?.itemAnimator = DefaultItemAnimator()
+        recyclerView.itemAnimator = DefaultItemAnimator()
 
         //Iniciamos el manegador de layouts del recycler con el manejador que creamos
-        recyclerView?.layoutManager = layoutManager
+        recyclerView.layoutManager = layoutManager
         //Le pasamos el adaptador personalizado al recycler view.
-        recyclerView?.adapter = adapter
+        recyclerView.adapter = adapter
 
     }
-    
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if(item?.itemId == R.id.add_name){
+            addNewElement(0)
+                return true
+        }else{
+            return super.onOptionsItemSelected(item)
+        }
+    }
+
     fun getAllNames () : ArrayList<String>{
         return  arrayListOf(
             "Alan",
@@ -54,6 +79,17 @@ class MainActivity : AppCompatActivity() {
                 "Pedro"
         )
 
+    }
+
+    fun addNewElement ( position: Int ){
+        names.add(position, "New name ${++counter} ")
+        adapter.notifyItemInserted(position)
+        layoutManager.scrollToPosition(position)
+    }
+
+    fun deleteElement (position : Int) {
+        names.removeAt(position)
+        adapter.notifyItemRemoved(position)
     }
 
 }
